@@ -18,7 +18,6 @@ private:
 
     //control
     bool loadMaterial;
-    bool movementIsEnabled;
     bool rotateAxis;
 
     //transformation
@@ -30,7 +29,6 @@ private:
     glm::mat4 projection = glm::mat4(1.0f);
     glm::vec3 translation = glm::vec3(0, 0, 0);
     glm::vec3 scale = glm::vec3(1, 1, 1);
-    glm::vec3 cameraPosition = glm::vec3(1, 1, 1);
     glm::mat4 view = glm::mat4(1.0f);
 
     glm::mat4 cubeMapOrientation = glm::mat4(1.0f);;
@@ -38,8 +36,8 @@ private:
     Model();
 
 public:
-    Model(cyTriMesh ctm, Shader shader, glm::vec3 translation, glm::vec3 scale, glm::vec3 cameraPosition, glm::mat4 projection, bool loadMaterial = true, bool movementIsEnabled = true, bool rotateAxis = true) : ctm(ctm),
-        materialCount(0), shader(shader), cameraPosition(cameraPosition), projection(projection), translation(translation), scale(scale), loadMaterial(loadMaterial), movementIsEnabled(movementIsEnabled), rotateAxis(rotateAxis) {
+    Model(cyTriMesh ctm, Shader shader, glm::vec3 translation, glm::vec3 scale, glm::mat4 projection, bool loadMaterial = true, bool rotateAxis = true) : ctm(ctm),
+        materialCount(0), shader(shader), projection(projection), translation(translation), scale(scale), loadMaterial(loadMaterial), rotateAxis(rotateAxis) {
 
         modelMatrix = glm::mat4(1.0f);
         modelMatrix = glm::translate(modelMatrix, translation);
@@ -130,25 +128,14 @@ public:
         }
     }
 
-    void Draw() {
+    void Draw(glm::mat4 view) {
         shader.use();
-
-        view = glm::mat4(1.0f);
-        view = glm::translate(view, -cameraPosition);
-        view = glm::translate(view, glm::vec3(0, 0, -cameraDistance));
-        view = glm::rotate(view, glm::radians(pitch), glm::vec3(1, 0, 0));
-        view = glm::rotate(view, glm::radians(yaw), glm::vec3(0, 1, 0));
 
         shader.setMat4("viewMatrix", view);
         shader.setMat4("mvp", projection * view * modelMatrix);
         shader.setMat4("mv", view * modelMatrix);
         shader.setMat4("mvN", glm::transpose(glm::inverse(view * modelMatrix)));   //mv for Normals
         shader.setVec3("lightPosition", lightPos);
-
-        glm::mat4 r = glm::mat4(1.0f);
-        r = glm::rotate(r, glm::radians(pitch), glm::vec3(1, 0, 0));
-        r = glm::rotate(r, glm::radians(yaw), glm::vec3(0, 1, 0));
-        shader.setVec3("cameraWorldPosition", r * glm::vec4(cameraPosition, 1));
 
         if (materialCount == 0 || !loadMaterial) {
             glBindVertexArray(VAO);
@@ -201,38 +188,6 @@ public:
         lightPos = lp;
     }
 
-    void rotate(float xoffset, float yoffset) {
-        yaw += xoffset;
-        pitch += yoffset;
-    }
-
-    void adjustDistanceFromCamera(float offset) {
-        cameraDistance += offset;
-    }
-
-    void setCubeMapOrientation(glm::mat4 cmo) {
-        cubeMapOrientation = cmo;
-        shader.use();
-        shader.setMat4("cubeMapOrientation", cmo);
-    }
-
-    void ToggleCubeMapReflections(bool use) {
-        shader.use();
-        shader.setBool("useCubeMap", use);
-    }
-
-    glm::mat4 getModelViewMatrix() const {
-        return view * modelMatrix;
-    }
-
-    glm::mat4 getModelMatrix() const {
-        return modelMatrix;
-    }
-
-    glm::mat4 getViewMatrix() const {
-        return view;
-    }
-
 private:
     void ManageTextures(GLuint* textures, cyTriMesh ctm, size_t materialNum) {
         if (ctm.M(materialNum).map_Ka) {
@@ -268,7 +223,7 @@ private:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         int width, height, nrChannels;
-        unsigned char* data = stbi_load(name, &width, &height, &nrChannels, 0);
+        unsigned char* data = stbi_load(("Models/" + std::string(name)).c_str(), &width, &height, &nrChannels, 0);
         if (data)
         {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
