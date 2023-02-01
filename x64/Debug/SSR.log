@@ -1,4 +1,0 @@
-﻿  glad.c
-  Source.cpp
-H:\CG\Projects\SSR\Shader.h(40,40): warning C4101: 'e': unreferenced local variable
-H:\CG\Projects\SSR\Model.h(5,10): fatal  error C1083: Cannot open include file: 'stb_image.h': No such file or directory
