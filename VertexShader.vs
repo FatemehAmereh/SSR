@@ -12,11 +12,9 @@ out vec3 normal;
 out vec3 posForColoring;
 out vec2 texCoord;
 
-out vec3 cubemapDir;
 void main(){
 	gl_Position = mvp * vec4(pos,1);
 	posForColoring = (mv * vec4(pos,1)).xyz;
 	normal = mat3(mvN) * norm;
 	texCoord = tex;
-	cubemapDir = pos;
 }

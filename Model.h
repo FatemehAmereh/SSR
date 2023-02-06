@@ -103,18 +103,13 @@ public:
             materialCount = ctm.NM();
             for (size_t i = 0; i < materialCount; i++)
             {
-                GLuint* textureTmp = new GLuint[5];
+                GLuint* textureTmp = new GLuint[2];
                 ManageTextures(textureTmp, ctm, i);
                 textures.push_back(textureTmp);
             }
             shader.use();
-            shader.setInt("ambientTexture", 0);
-            shader.setInt("diffuseTexture", 1);
-            shader.setInt("specularTexture", 2);
-            shader.setInt("specularExponentTexture", 3);
-            shader.setInt("alphaTexture", 4);
-            shader.setInt("cubemap", 5);
-            shader.setBool("useCubeMap", false);
+            shader.setInt("diffuseTexture", 0);
+            shader.setInt("specularTexture", 1);
         }
 #pragma endregion  
     }
@@ -145,38 +140,33 @@ public:
             for (size_t i = 0; i < materialCount; i++)
             {
                 GLuint* t = textures[i];
-                shader.setBool("usetexa", true);
-                shader.setBool("usetexd", true);
-                shader.setBool("usetexs", true);
-                shader.setBool("usetexsc", true);
 
-                if (!ctm.M(i).map_Ka) {
-                    shader.setVec3("ka", glm::vec3(ctm.M(i).Ka[0], ctm.M(i).Ka[1], ctm.M(i).Ka[2]));
-                    shader.setBool("usetexa", false);
+                if (ctm.M(i).Ns) {
+                    shader.setFloat("specularExponent", ctm.M(i).Ns);
                 }
-                if (!ctm.M(i).map_Kd) {
+                if (ctm.M(i).Ka) {
+                    shader.setVec3("ka", glm::vec3(ctm.M(i).Ka[0], ctm.M(i).Ka[1], ctm.M(i).Ka[2]));
+                }
+                if (ctm.M(i).Kd) {
                     shader.setVec3("kd", glm::vec3(ctm.M(i).Kd[0], ctm.M(i).Kd[1], ctm.M(i).Kd[2]));
+                }
+                if (ctm.M(i).Ks) {
+                    shader.setVec3("ks", glm::vec3(ctm.M(i).Ks[0], ctm.M(i).Ks[1], ctm.M(i).Ks[2]));
+                }
+
+                shader.setBool("usetexd", true);
+                shader.setBool("usetexs", true);                       
+                if (!ctm.M(i).map_Kd) {
                     shader.setBool("usetexd", false);
                 }
                 if (!ctm.M(i).map_Ks) {
-                    shader.setVec3("ks", glm::vec3(ctm.M(i).Ks[0], ctm.M(i).Ks[1], ctm.M(i).Ks[2]));
                     shader.setBool("usetexs", false);
-                }
-                if (!ctm.M(i).map_Ns) {
-                    shader.setFloat("specularExponent", ctm.M(i).Ns);
-                    shader.setBool("usetexsc", false);
                 }
 
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, t[0]);
                 glActiveTexture(GL_TEXTURE1);
                 glBindTexture(GL_TEXTURE_2D, t[1]);
-                glActiveTexture(GL_TEXTURE2);
-                glBindTexture(GL_TEXTURE_2D, t[2]);
-                glActiveTexture(GL_TEXTURE3);
-                glBindTexture(GL_TEXTURE_2D, t[3]);
-                glActiveTexture(GL_TEXTURE4);
-                glBindTexture(GL_TEXTURE_2D, t[4]);
 
                 glBindVertexArray(VAO);
                 glDrawArrays(GL_TRIANGLES, ctm.GetMaterialFirstFace(i) * 3, ctm.GetMaterialFaceCount(i) * 3);
@@ -190,30 +180,15 @@ public:
 
 private:
     void ManageTextures(GLuint* textures, cyTriMesh ctm, size_t materialNum) {
-        if (ctm.M(materialNum).map_Ka) {
+        if (ctm.M(materialNum).map_Kd) {
             glGenTextures(1, &textures[0]);
             glBindTexture(GL_TEXTURE_2D, textures[0]);
-            SetTextureData(ctm.M(materialNum).map_Ka);
-        }
-        if (ctm.M(materialNum).map_Kd) {
-            glGenTextures(1, &textures[1]);
-            glBindTexture(GL_TEXTURE_2D, textures[1]);
             SetTextureData(ctm.M(materialNum).map_Kd);
         }
         if (ctm.M(materialNum).map_Ks) {
-            glGenTextures(1, &textures[2]);
-            glBindTexture(GL_TEXTURE_2D, textures[2]);
+            glGenTextures(1, &textures[1]);
+            glBindTexture(GL_TEXTURE_2D, textures[1]);
             SetTextureData(ctm.M(materialNum).map_Ks);
-        }
-        if (ctm.M(materialNum).map_Ns) {
-            glGenTextures(1, &textures[3]);
-            glBindTexture(GL_TEXTURE_2D, textures[3]);
-            SetTextureData(ctm.M(materialNum).map_Ns);
-        }
-        if (ctm.M(materialNum).map_d) {
-            glGenTextures(1, &textures[4]);
-            glBindTexture(GL_TEXTURE_2D, textures[4]);
-            SetTextureData(ctm.M(materialNum).map_d);
         }
     }
 

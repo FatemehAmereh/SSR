@@ -25,7 +25,10 @@ Camera camera(glm::vec3(0, 0, 30.0f));
 float cameraSpeed = 2.0f;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+
+std::vector<Model*> models;
 #pragma endregion
+glm::vec3 lightPosition = glm::vec3(0, 10, 10);
 
 int main() {
 
@@ -60,13 +63,19 @@ int main() {
     glm::mat4 projection = glm::mat4(1.0f);
     projection = glm::perspective(glm::radians(45.0f), (float)(SCR_WIDTH / SCR_HEIGHT), 0.1f, 100.0f);
 
-    cyTriMesh ctm;
-    if (!ctm.LoadFromFileObj("Models/yoda.obj")) {
+    cyTriMesh Objectctm;
+    if (!Objectctm.LoadFromFileObj("Models/bunny.obj")) {
+        return -1;
+    }
+
+    cyTriMesh Cubectm;
+    if (!Cubectm.LoadFromFileObj("Models/cube.obj")) {
         return -1;
     }
 
     Shader generalShader("VertexShader.vs", "FragmentShader.fs");
-    Model* m = new Model(ctm, generalShader, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), projection, true, true);
+    models.push_back(new Model(Objectctm, generalShader, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), projection, true, false));
+    models.push_back(new Model(Cubectm, generalShader, glm::vec3(0.0f, -9.0f, 0.0f), glm::vec3(0.6f, 1.0f, 0.6f), projection, true, false));
 
     glm::mat4 view = glm::mat4(1.0);
 
@@ -81,7 +90,11 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         view = camera.GetViewMatrix();
-        m->Draw(view);
+        for (Model* m : models)
+        {
+            m->setLightPosition(view * glm::vec4(lightPosition, 1));
+            m->Draw(view);
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
