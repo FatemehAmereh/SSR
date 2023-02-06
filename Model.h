@@ -144,9 +144,9 @@ public:
                 if (ctm.M(i).Ns) {
                     shader.setFloat("specularExponent", ctm.M(i).Ns);
                 }
-                if (ctm.M(i).Ka) {
+                /*if (ctm.M(i).Ka) {
                     shader.setVec3("ka", glm::vec3(ctm.M(i).Ka[0], ctm.M(i).Ka[1], ctm.M(i).Ka[2]));
-                }
+                }*/
                 if (ctm.M(i).Kd) {
                     shader.setVec3("kd", glm::vec3(ctm.M(i).Kd[0], ctm.M(i).Kd[1], ctm.M(i).Kd[2]));
                 }
@@ -172,6 +172,13 @@ public:
                 glDrawArrays(GL_TRIANGLES, ctm.GetMaterialFirstFace(i) * 3, ctm.GetMaterialFaceCount(i) * 3);
             }
         }
+    }
+
+    void Draw() {
+        shader.use();
+        shader.setVec3("lightPosition", lightPos);
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, ctm.NF() * 3);
     }
 
     void setLightPosition(glm::vec4 lp) {

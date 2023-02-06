@@ -21,6 +21,9 @@
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Quad.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -46,10 +49,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="VertexShader.vs">
+    <None Include="ForwardPassVS.vs">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="FragmentShader.fs">
+    <None Include="DeferredPassFS.fs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="ForwardPassFS.fs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="DeferredPassVS.vs">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

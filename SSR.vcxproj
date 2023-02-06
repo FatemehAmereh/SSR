@@ -133,6 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
+    <ClCompile Include="Quad.h" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -145,8 +146,10 @@
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="FragmentShader.fs" />
-    <None Include="VertexShader.vs" />
+    <None Include="DeferredPassVS.vs" />
+    <None Include="ForwardPassFS.fs" />
+    <None Include="DeferredPassFS.fs" />
+    <None Include="ForwardPassVS.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
