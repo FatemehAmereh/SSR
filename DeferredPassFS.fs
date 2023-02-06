@@ -26,8 +26,8 @@ void main(){
 	vec3 halfVec = normalize(lightDir+view);
 
 	vec3 diffuse = max(0, dot(norm,lightDir)) * Kd;
-	vec3 specular = pow(max(0,dot(halfVec, norm)), specularExponent) * Ks;
+	vec3 specular = pow(max(0,dot(halfVec, norm)), 1000) * Ks;
 	vec3 blinn = I * (diffuse + specular); //+ ka;
 
-	FragColor = vec4(specular, 1.0f);
+	FragColor = vec4(blinn, 1.0f);
 }
