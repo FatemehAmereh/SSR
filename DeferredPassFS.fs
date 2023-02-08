@@ -8,6 +8,7 @@ uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
 uniform sampler2D gSpecular;
+uniform sampler2D depthMap;
 
 uniform vec3 lightPosition;
 
@@ -18,6 +19,7 @@ void main(){
 	vec4 spec = texture(gSpecular, texCoord);
 	vec3 Ks = spec.rgb;
 	float specularExponent = spec.a;
+	vec3 depth = texture(depthMap, texCoord).rgb;
 
 	vec3 norm = texture(gNormal, texCoord).rgb;
 	vec3 posForColoring = texture(gPosition, texCoord).rgb;
@@ -30,5 +32,5 @@ void main(){
 	vec3 specular = pow(max(0,dot(halfVec, norm)), 100) * Ks;
 	vec3 blinn = I * (diffuse + specular) + ka; 
 
-	FragColor = vec4(blinn, 1.0f);
+	FragColor = vec4(depth, 1.0f);
 }

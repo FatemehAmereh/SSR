@@ -117,16 +117,26 @@ int main() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, gSpecular, 0);
 
+    //depth texture
+    GLuint depthMap;
+    glGenTextures(1, &depthMap);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, SCR_WIDTH, SCR_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthMap, 0);
+
     GLenum drawBuffers[4] = { GL_COLOR_ATTACHMENT0 , GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
     glDrawBuffers(4, drawBuffers);
 
     //depth buffer
-    GLuint depthBuffer;
+    /*GLuint depthBuffer;
     glGenRenderbuffers(1, &depthBuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);*/
+
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         std::cout << "problems binding GBuffer" << std::endl;
@@ -144,6 +154,7 @@ int main() {
     generalShader.setInt("gNormal", 1);
     generalShader.setInt("gAlbedo", 2);
     generalShader.setInt("gSpecular", 3);
+    generalShader.setInt("depthMap", 4);
     //Model* quad = new Model(Quadctm, generalShader, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), projection, false, false);
 
     glm::mat4 view = glm::mat4(1.0);
@@ -182,6 +193,8 @@ int main() {
         glBindTexture(GL_TEXTURE_2D, gAlbedo);
         glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, gSpecular);
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
 
         generalShader.use();
         generalShader.setVec3("lightPosition", view * glm::vec4(lightPosition, 1));
