@@ -1,9 +1,9 @@
 #version 460 core
 
-layout (location = 0) out vec3 gPosition;
-layout (location = 1) out vec3 gNormal;
-layout (location = 2) out vec3 gAlbedo;
-layout (location = 3) out vec4 gSpecular;
+//layout (location = 0) out vec3 gPosition;
+layout (location = 0) out vec3 gNormal;
+layout (location = 1) out vec3 gAlbedo;
+layout (location = 2) out vec4 gSpecular;
 
 in vec3 normal;
 in vec3 posForColoring;
@@ -22,7 +22,7 @@ uniform sampler2D specularTexture;
 uniform vec3 lightPosition;
 
 void main(){
-	gPosition = posForColoring;
+	//gPosition = posForColoring;
 	gNormal = normalize(normal);
 	gAlbedo = usetexd ? texture(diffuseTexture, texCoord).rgb : kd;
 	gSpecular.rgb = usetexs ? texture(specularTexture, texCoord).rgb : ks;
