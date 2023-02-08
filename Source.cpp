@@ -183,12 +183,13 @@ int main() {
         glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, gSpecular);
 
-        ////RenderQuad
         generalShader.use();
         generalShader.setVec3("lightPosition", view * glm::vec4(lightPosition, 1));
-
         glBindVertexArray(quad->GetVAO());
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        //SSR
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
