@@ -212,6 +212,10 @@ int main() {
         glfwPollEvents();
     }
 
+    for (Model* m : models)
+    {
+        delete m;
+    }
     delete quad;
     glfwTerminate();
     return 0;

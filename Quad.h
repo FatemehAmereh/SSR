@@ -34,6 +34,12 @@ public:
 		glEnableVertexAttribArray(1);
 	};
 
+	~Quad() {
+		glDeleteVertexArrays(1, &VAO);
+		glDeleteBuffers(1, &VBO);
+		glDeleteBuffers(1, &EBO);
+	}
+
 	GLuint GetVAO() {
 		return VAO;
 	}
