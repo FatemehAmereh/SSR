@@ -27,5 +27,4 @@ void main(){
 	gAlbedo = usetexd ? texture(diffuseTexture, texCoord).rgb : kd;
 	gSpecular.rgb = usetexs ? texture(specularTexture, texCoord).rgb : ks;
 	gSpecular.a = specularExponent;
-
 }

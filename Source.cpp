@@ -61,17 +61,21 @@ int main() {
     }
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_STENCIL_TEST);
 #pragma endregion
     glm::mat4 projection = glm::mat4(1.0f);
-    projection = glm::perspective(glm::radians(45.0f), (float)(SCR_WIDTH / SCR_HEIGHT), 0.1f, 100.0f);
+    projection = glm::perspective(glm::radians(45.0f), (float)(SCR_WIDTH / SCR_HEIGHT), 0.1f, 300.0f);
 
     cyTriMesh Objectctm;
     if (!Objectctm.LoadFromFileObj("Models/bunny.obj")) {
         return -1;
     }
-
     cyTriMesh Cubectm;
     if (!Cubectm.LoadFromFileObj("Models/cube.obj")) {
+        return -1;
+    }
+    cyTriMesh Groundctm;
+    if (!Groundctm.LoadFromFileObj("Models/ground.obj")) {
         return -1;
     }
 
@@ -147,6 +151,7 @@ int main() {
     Shader forwardPassShader("ForwardPassVS.vs", "ForwardPassFS.fs");
     models.push_back(new Model(Objectctm, forwardPassShader, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), projection, true, false));
     models.push_back(new Model(Cubectm, forwardPassShader, glm::vec3(0.0f, -9.0f, 0.0f), glm::vec3(0.6f, 1.0f, 0.6f), projection, true, false));
+    models.push_back(new Model(Groundctm, forwardPassShader, glm::vec3(0.0f, -20.0f, 0.0f), glm::vec3(10.0f, 1.0f, 10.0f), projection, true, false)); //ground
 
     Shader generalShader("DeferredPassVS.vs", "DeferredPassFS.fs");
     generalShader.use();
@@ -171,7 +176,7 @@ int main() {
         //Forward Pass
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, gBuffer);
         glClearColor(0, 0, 0, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         view = camera.GetViewMatrix();
         for (Model* m : models)
