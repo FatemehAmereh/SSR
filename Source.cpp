@@ -133,7 +133,6 @@ int main() {
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, SCR_WIDTH, SCR_HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
-    
     GLuint stencilBuffer;
     glGenRenderbuffers(1, &stencilBuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, stencilBuffer);
@@ -172,14 +171,15 @@ int main() {
     GLuint ssrFB; //SSR Frame Buffer
     glGenFramebuffers(1, &ssrFB);
     glBindFramebuffer(GL_FRAMEBUFFER, ssrFB);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
-    //GLuint reflectionColorBuffer;
-    //glGenTextures(1, &reflectionColorBuffer);
-    //glBindTexture(GL_TEXTURE_2D, reflectionColorBuffer);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, reflectionColorBuffer, 0);
+    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, depthMap, 0);
+    GLuint reflectionColorBuffer;
+    glGenTextures(1, &reflectionColorBuffer);
+    glBindTexture(GL_TEXTURE_2D, reflectionColorBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, reflectionColorBuffer, 0);
     GLenum drawBuffers3[1] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(1, drawBuffers3);
     //glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, stencilBuffer);
@@ -211,9 +211,9 @@ int main() {
     Shader outputShader("SSRVS.vs", "outputFS.fs");
     outputShader.use();
     outputShader.setInt("colorTexture", 0);
+    outputShader.setInt("refTexture", 1);
 
     glm::mat4 view = glm::mat4(1.0);
-
 
     while (!glfwWindowShouldClose(window))
     {
@@ -226,11 +226,12 @@ int main() {
         //Forward Pass
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, gBuffer);
         glClearColor(0, 0, 0, 1.0f);
+        glStencilMask(0xFF);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         //glStencilFunc(GL_EQUAL, 0, 0xFF);
         //glStencilMask(0x00);
-        //glStencilFunc(GL_ALWAYS, 1, 0xFF);
+        glStencilFunc(GL_EQUAL, 0, 0xFF);
         glStencilMask(0x00); 
         view = camera.GetViewMatrix();
         for (Model* m : models)
@@ -245,9 +246,9 @@ int main() {
         ground->Draw(view);
 
         //Deferred(Lighting) Pass
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, LPFB);
         glClearColor(0, 0, 0, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, gNormal);
@@ -264,16 +265,14 @@ int main() {
         lightingPassShader.setFloat("SCR_HEIGHT", SCR_HEIGHT);
         lightingPassShader.setMat4("invProj", glm::inverse(projection));
 
-        //glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-        glStencilFunc(GL_ALWAYS, 1, 0xFF);
-        glStencilMask(0xFF);
+  
         glBindVertexArray(quad->GetVAO());
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         //SSR
-        /*glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, ssrFB);
         glClearColor(0, 0, 0, 1.0f);
-        glClear(GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, gNormal);
@@ -290,22 +289,23 @@ int main() {
         glStencilFunc(GL_EQUAL, 1, 0xFF);
         glStencilMask(0x00);
         glBindVertexArray(quad->GetVAO());
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);*/
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
-        ////output
-        //glBindFramebuffer(GL_DRAW_FRAMEBUFFER, originalFrameBuffer);
-        //glClearColor(0, 0, 0, 1.0f);
-        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //output
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, originalFrameBuffer);
+        glClearColor(0, 0, 0, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-        //glActiveTexture(GL_TEXTURE0);
-        //glBindTexture(GL_TEXTURE_2D, colorBuffer);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, colorBuffer);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, reflectionColorBuffer);
 
-        //outputShader.use();
-        //glStencilFunc(GL_ALWAYS, 1, 0xFF);
-        //glStencilMask(0x00);
-        //glBindVertexArray(quad->GetVAO());
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        outputShader.use();
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
+        glBindVertexArray(quad->GetVAO());
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
