@@ -11,5 +11,5 @@ uniform float SCR_HEIGHT;
 uniform mat4 invProj;
 
 void main(){
-	colorBufferOut = vec4(1,1,1,1);
+	colorBufferOut = vec4(1,0,1,1);
 }
