@@ -171,15 +171,15 @@ int main() {
     GLuint ssrFB; //SSR Frame Buffer
     glGenFramebuffers(1, &ssrFB);
     glBindFramebuffer(GL_FRAMEBUFFER, ssrFB);
-    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, depthMap, 0);
-    GLuint reflectionColorBuffer;
+    /*GLuint reflectionColorBuffer;
     glGenTextures(1, &reflectionColorBuffer);
     glBindTexture(GL_TEXTURE_2D, reflectionColorBuffer);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, reflectionColorBuffer, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, reflectionColorBuffer, 0);*/
     GLenum drawBuffers3[1] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(1, drawBuffers3);
     //glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, stencilBuffer);
@@ -196,7 +196,6 @@ int main() {
 
     Shader lightingPassShader("DeferredPassVS.vs", "DeferredPassFS.fs");
     lightingPassShader.use();
-    //generalShader.setInt("gPosition", 0);
     lightingPassShader.setInt("gNormal", 0);
     lightingPassShader.setInt("gAlbedo", 1);
     lightingPassShader.setInt("gSpecular", 2);
@@ -211,7 +210,6 @@ int main() {
     Shader outputShader("SSRVS.vs", "outputFS.fs");
     outputShader.use();
     outputShader.setInt("colorTexture", 0);
-    outputShader.setInt("refTexture", 1);
 
     glm::mat4 view = glm::mat4(1.0);
 
@@ -229,8 +227,6 @@ int main() {
         glStencilMask(0xFF);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-        //glStencilFunc(GL_EQUAL, 0, 0xFF);
-        //glStencilMask(0x00);
         glStencilFunc(GL_EQUAL, 0, 0xFF);
         glStencilMask(0x00); 
         view = camera.GetViewMatrix();
@@ -271,8 +267,6 @@ int main() {
 
         //SSR
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, ssrFB);
-        glClearColor(0, 0, 0, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, gNormal);
@@ -299,8 +293,6 @@ int main() {
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, colorBuffer);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, reflectionColorBuffer);
 
         outputShader.use();
         glStencilFunc(GL_ALWAYS, 1, 0xFF);
