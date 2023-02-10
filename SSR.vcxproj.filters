@@ -61,5 +61,14 @@
     <None Include="DeferredPassVS.vs">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="SSRVS.vs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="SSRFS.fs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="outputFS.fs">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -150,6 +150,9 @@
     <None Include="ForwardPassFS.fs" />
     <None Include="DeferredPassFS.fs" />
     <None Include="ForwardPassVS.vs" />
+    <None Include="outputFS.fs" />
+    <None Include="SSRFS.fs" />
+    <None Include="SSRVS.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

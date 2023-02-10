@@ -1,6 +1,7 @@
 #version 460 core
 
-out vec4 FragColor;
+layout (location = 0) out vec4 colorBuffer;
+//layout (location = 1) out vec4 FragColor;
 
 in vec2 texCoord;
 
@@ -44,5 +45,6 @@ void main(){
 	vec3 specular = pow(max(0,dot(halfVec, norm)), 100) * Ks;
 	vec3 blinn = I * (diffuse + specular) + ka; 
 
-	FragColor = vec4(blinn, 1.0f);
+	//FragColor = vec4(blinn, 1.0f);
+	colorBuffer = vec4(blinn, 1.0f);
 }
