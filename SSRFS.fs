@@ -68,6 +68,8 @@ void main(){
 	int screenSpaceMaxDistance = max(abs(screenSpaceDistance.x), abs(screenSpaceDistance.y)) / 2;
 	rayDirectionTexture /= max(screenSpaceMaxDistance, 0.001f);
 
+
+	//trace the ray
 	vec3 outColor = TraceRay(pixelPositionTexture, rayDirectionTexture, screenSpaceMaxDistance);
 	reflectionColor = vec4(outColor, 1);
 }
