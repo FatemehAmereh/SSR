@@ -17,11 +17,10 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void mouseMovementCallback(GLFWwindow* window, double xpos, double ypos);
-void CreateTextures(GLint frameBuffer, GLuint& texID, int colorAttachmentOffset);
 
 #pragma region parameters
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 800;
+const unsigned int SCR_WIDTH = 1280;
+const unsigned int SCR_HEIGHT = 720;
 
 Camera camera(glm::vec3(0, 0, 30.0f));
 float cameraSpeed = 2.0f;
@@ -29,8 +28,31 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 std::vector<Model*> models;
+const char * modelNames[] = {
+    "bunny",
+    "SIMPLE ROUND TABLE",
+    "teapot",
+    "cube"
+};
+glm::vec3 modelTransformation[] = {
+    glm::vec3(0.0f, 5.0f, -20.0f), glm::vec3(3.0f, 3.0f, 3.0f), //translation, scale
+    glm::vec3(-17.0f, -9.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+    glm::vec3(-17.0f, -2.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f),
+    glm::vec3(0.0f, -9.0f, 0.0f), glm::vec3(0.6f, 1.0f, 0.6f),
+};
+
+bool flipModel[] = {
+    false,
+    false,
+    true,
+    false,
+};
 #pragma endregion
-glm::vec3 lightPosition = glm::vec3(0, 10, 10);
+glm::vec3 lights[] = {
+    glm::vec3(20, 10, 10),    glm::vec3(1,1,1),               glm::vec3(1,0.007f,0.0002f),          //position, color, (constant, linear, quadratic)
+    glm::vec3(-25, -5, -35), glm::vec3(0.224f,0.42f,0.659f), glm::vec3(1,0.007f,0.0002f),
+    glm::vec3(25, -5, -35), glm::vec3(0.306f,0.714f,0.71f), glm::vec3(1,0.027,0.0028),
+};
 
 int main() {
 
@@ -68,30 +90,9 @@ int main() {
 
 #pragma endregion
     glm::mat4 projection = glm::mat4(1.0f);
-    projection = glm::perspective(glm::radians(45.0f), (float)(SCR_WIDTH / SCR_HEIGHT), 0.1f, 300.0f);
-
-    cyTriMesh Objectctm;
-    if (!Objectctm.LoadFromFileObj("Models/bunny.obj")) {
-        return -1;
-    }
-    cyTriMesh Cubectm;
-    if (!Cubectm.LoadFromFileObj("Models/cube.obj")) {
-        return -1;
-    }
-    cyTriMesh Groundctm;
-    if (!Groundctm.LoadFromFileObj("Models/ground.obj")) {
-        return -1;
-    }
-    cyTriMesh Spherectm;
-    if (!Spherectm.LoadFromFileObj("Models/sphere.obj")) {
-        return -1;
-    }
+    projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 300.0f);
 
     Quad* quad = new Quad();
-    /*cyTriMesh Quadctm;
-    if (!Quadctm.LoadFromFileObj("Models/Quad.obj")) {
-        return -1;
-    }*/
 
     GLint originalFrameBuffer;
     glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &originalFrameBuffer);
@@ -129,20 +130,6 @@ int main() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, depthMap, 0);
-
-    //depth buffer
-    /*GLuint depthBuffer;
-    glGenRenderbuffers(1, &depthBuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, SCR_WIDTH, SCR_HEIGHT);
-    glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
-    GLuint stencilBuffer;
-    glGenRenderbuffers(1, &stencilBuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, stencilBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, SCR_WIDTH, SCR_HEIGHT);
-    glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, stencilBuffer);*/
    
     GLenum drawBuffers1[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     glDrawBuffers(3, drawBuffers1);
@@ -175,7 +162,6 @@ int main() {
     GLuint ssrFB; //SSR Frame Buffer
     glGenFramebuffers(1, &ssrFB);
     glBindFramebuffer(GL_FRAMEBUFFER, ssrFB);
-   // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, depthMap, 0);
     GLuint reflectionColorBuffer;
     glGenTextures(1, &reflectionColorBuffer);
@@ -186,7 +172,6 @@ int main() {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, reflectionColorBuffer, 0);
     GLenum drawBuffers3[1] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(1, drawBuffers3);
-    //glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, stencilBuffer);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         std::cout << "problems binding ssrFB" << std::endl;
         return -1;
@@ -194,9 +179,26 @@ int main() {
 #pragma endregion
 
     Shader forwardPassShader("ForwardPassVS.vs", "ForwardPassFS.fs");
-    models.push_back(new Model(Objectctm, forwardPassShader, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), projection, true, false));
-    models.push_back(new Model(Cubectm, forwardPassShader, glm::vec3(0.0f, -9.0f, 0.0f), glm::vec3(0.6f, 1.0f, 0.6f), projection, true, false));
-    models.push_back(new Model(Spherectm, forwardPassShader, glm::vec3(-10.0f, -5.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), projection, true, false));    //sphere
+
+    int numOfModels = 3;
+    cyTriMesh* Objectctm = new cyTriMesh;
+    for (int i = 0; i < numOfModels; i++)
+    {  
+        if (!Objectctm->LoadFromFileObj(("Models/" + std::string(modelNames[i]) + ".obj").c_str())) {
+            return -1;
+        }
+        models.push_back(new Model(*Objectctm, forwardPassShader, modelTransformation[i*2], modelTransformation[i*2+1], projection, true, flipModel[i]));
+    }
+    delete Objectctm;
+    /* cyTriMesh Spherectm;
+    if (!Spherectm.LoadFromFileObj("Models/sphere.obj")) {
+        return -1;
+    }*/
+    //Model* sphere = new Model(Spherectm, forwardPassShader, glm::vec3(-10.0f, -5.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), projection, true, false);    //sphere
+    cyTriMesh Groundctm;
+    if (!Groundctm.LoadFromFileObj("Models/ground.obj")) {
+        return -1;
+    }   
     Model* ground = new Model(Groundctm, forwardPassShader, glm::vec3(0.0f, -20.0f, 0.0f), glm::vec3(10.0f, 1.0f, 10.0f), projection, true, false); //ground
 
     Shader lightingPassShader("DeferredPassVS.vs", "DeferredPassFS.fs");
@@ -205,7 +207,15 @@ int main() {
     lightingPassShader.setInt("gAlbedo", 1);
     lightingPassShader.setInt("gSpecular", 2);
     lightingPassShader.setInt("depthMap", 3);
-    
+    for (int i = 0; i < sizeof(lights) / sizeof(lights[0]); i++)
+    {
+        lightingPassShader.setVec3("lights[" + std::to_string(i) + "].intensity", lights[i * 3 + 1]);
+        lightingPassShader.setFloat("lights[" + std::to_string(i) + "].constant", lights[i * 3 + 2].x);
+        lightingPassShader.setFloat("lights[" + std::to_string(i) + "].linear", lights[i * 3 + 2].y);
+        lightingPassShader.setFloat("lights[" + std::to_string(i) + "].quadratic", lights[i * 3 + 2].z);
+    }
+
+
     Shader SSRShader("SSRVS.vs", "SSRFS.fs");
     SSRShader.use();
     SSRShader.setInt("gNormal", 0);
@@ -239,14 +249,14 @@ int main() {
         view = camera.GetViewMatrix();
         for (Model* m : models)
         {   
-            m->setLightPosition(view * glm::vec4(lightPosition, 1));
             m->Draw(view);
         }
 
         glStencilFunc(GL_ALWAYS, 1, 0xFF);
         glStencilMask(0xFF);
-        ground->setLightPosition(view * glm::vec4(lightPosition, 1));
         ground->Draw(view);
+        //sphere->setLightPosition(view* glm::vec4(lightPosition, 1));
+        //sphere->Draw(view);
 
         //Deferred(Lighting) Pass
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, LPFB);
@@ -263,10 +273,14 @@ int main() {
         glBindTexture(GL_TEXTURE_2D, depthMap);
 
         lightingPassShader.use();
-        lightingPassShader.setVec3("lightPosition", view * glm::vec4(lightPosition, 1));
+        lightingPassShader.setVec3("lightPosition", view * glm::vec4(lights[0], 1));
         lightingPassShader.setFloat("SCR_WIDTH", SCR_WIDTH);
         lightingPassShader.setFloat("SCR_HEIGHT", SCR_HEIGHT);
         lightingPassShader.setMat4("invProj", glm::inverse(projection));
+        for (int i = 0; i < sizeof(lights) / sizeof(lights[0]); i++)
+        {     
+            lightingPassShader.setVec3("lights[" + std::to_string(i) + "].position", view * glm::vec4(lights[i * 3], 1));
+        }
 
   
         glBindVertexArray(quad->GetVAO());
@@ -295,8 +309,8 @@ int main() {
         glStencilMask(0x00);
         glBindVertexArray(quad->GetVAO());
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
         glDepthMask(GL_TRUE);
+
         //output
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, originalFrameBuffer);
         glClearColor(0, 0, 0, 1.0f);
@@ -360,6 +374,3 @@ void mouseMovementCallback(GLFWwindow* window, double xpos, double ypos) {
     camera.rotate(xpos, ypos);
 }
 
-void CreateTextures(GLint frameBuffer, GLuint &texID, int colorAttachmentOffset) {
-
-}

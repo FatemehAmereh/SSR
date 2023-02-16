@@ -130,7 +130,7 @@ public:
         shader.setMat4("mvp", projection * view * modelMatrix);
         shader.setMat4("mv", view * modelMatrix);
         shader.setMat4("mvN", glm::transpose(glm::inverse(view * modelMatrix)));   //mv for Normals
-        shader.setVec3("lightPosition", lightPos);
+        //shader.setVec3("lightPosition", lightPos);
 
         if (materialCount == 0 || !loadMaterial) {
             glBindVertexArray(VAO);
@@ -176,14 +176,14 @@ public:
 
     void Draw() {
         shader.use();
-        shader.setVec3("lightPosition", lightPos);
+        //shader.setVec3("lightPosition", lightPos);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, ctm.NF() * 3);
     }
 
-    void setLightPosition(glm::vec4 lp) {
+    /*void setLightPosition(glm::vec4 lp) {
         lightPos = lp;
-    }
+    }*/
 
 private:
     void ManageTextures(GLuint* textures, cyTriMesh ctm, size_t materialNum) {
