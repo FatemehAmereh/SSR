@@ -58,7 +58,7 @@ void main(){
 		}
 		sampleDepth = texture(depthMap, rayStart.xy).r;
 		float depthDif = rayStart.z - sampleDepth;
-		if(depthDif >= 0 && depthDif < 0.0001){ //sampleDepth < rayStart.z){	//we have a hit
+		if(depthDif >= 0 && depthDif < 0.00001){ //sampleDepth < rayStart.z){	//we have a hit
 			//reflectionColor = vec3(0.6f,0,0);
 			hit = true;
 			reflectionColor = texture(colorBuffer, rayStart.xy).rgb;

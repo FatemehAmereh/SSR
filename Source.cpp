@@ -82,6 +82,10 @@ int main() {
     if (!Groundctm.LoadFromFileObj("Models/ground.obj")) {
         return -1;
     }
+    cyTriMesh Spherectm;
+    if (!Spherectm.LoadFromFileObj("Models/sphere.obj")) {
+        return -1;
+    }
 
     Quad* quad = new Quad();
     /*cyTriMesh Quadctm;
@@ -121,7 +125,7 @@ int main() {
     GLuint depthMap;
     glGenTextures(1, &depthMap);
     glBindTexture(GL_TEXTURE_2D, depthMap);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH32F_STENCIL8, SCR_WIDTH, SCR_HEIGHT, 0, GL_DEPTH_STENCIL, GL_FLOAT_32_UNSIGNED_INT_24_8_REV, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, depthMap, 0);
@@ -192,6 +196,7 @@ int main() {
     Shader forwardPassShader("ForwardPassVS.vs", "ForwardPassFS.fs");
     models.push_back(new Model(Objectctm, forwardPassShader, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), projection, true, false));
     models.push_back(new Model(Cubectm, forwardPassShader, glm::vec3(0.0f, -9.0f, 0.0f), glm::vec3(0.6f, 1.0f, 0.6f), projection, true, false));
+    models.push_back(new Model(Spherectm, forwardPassShader, glm::vec3(-10.0f, -5.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), projection, true, false));    //sphere
     Model* ground = new Model(Groundctm, forwardPassShader, glm::vec3(0.0f, -20.0f, 0.0f), glm::vec3(10.0f, 1.0f, 10.0f), projection, true, false); //ground
 
     Shader lightingPassShader("DeferredPassVS.vs", "DeferredPassFS.fs");
