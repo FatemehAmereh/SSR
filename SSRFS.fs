@@ -37,20 +37,20 @@ void main(){
 
 	vec3 rayEndPositionView = positionView.xyz + reflectionView * maxRayDistance;
 
-	vec3 pixelPositionTexture = vec3(texCoord, texture(gNormal, texCoord).w);
+	vec3 pixelPositionTexture = vec3(texCoord, depth);
 	
 	vec4 rayEndPositionTexture = projection * vec4(rayEndPositionView,1);
 	rayEndPositionTexture /= rayEndPositionTexture.w;
 	rayEndPositionTexture.xyz = (rayEndPositionTexture.xyz + vec3(1,1,1)) / 2.0f;
-	rayEndPositionTexture.z = texture(gNormal, rayEndPositionTexture.xy).w;//***
+
 	vec3 rayDirectionTexture = rayEndPositionTexture.xyz - pixelPositionTexture;	//dp
 
 	ivec2 screenSpaceStartPosition = ivec2(pixelPositionTexture.x * SCR_WIDTH, pixelPositionTexture.y * SCR_HEIGHT); 
 	ivec2 screenSpaceEndPosition = ivec2(rayEndPositionTexture.x * SCR_WIDTH, rayEndPositionTexture.y * SCR_HEIGHT); 
 
-	ivec2 screenSpaceDistance = screenSpaceEndPosition.xy - screenSpaceStartPosition.xy;
+	ivec2 screenSpaceDistance = screenSpaceEndPosition - screenSpaceStartPosition;
 
-	int screenSpaceMaxDistance = max(abs(screenSpaceDistance.x), abs(screenSpaceDistance.y));
+	int screenSpaceMaxDistance = max(abs(screenSpaceDistance.x), abs(screenSpaceDistance.y)) / 5;
 	vec3 dirTexture = screenSpaceMaxDistance == 0 ? rayDirectionTexture : rayDirectionTexture / screenSpaceMaxDistance;
 
 	vec3 rayStart = pixelPositionTexture;
@@ -64,13 +64,13 @@ void main(){
 		}
 		sampleDepth = texture(depthMap, rayStart.xy).r;
 
-		float t_rayDepth = rayStart.z;//ReturnZInView(rayStart);
-		float t_sampleDepth = texture(gNormal, rayStart.xy).w; //;ReturnZInView(vec3(rayStart.x, rayStart.y, sampleDepth));
+		float t_rayDepth = ReturnZInView(rayStart);
+		float t_sampleDepth = ReturnZInView(vec3(rayStart.x, rayStart.y, sampleDepth));
 
 		float depthDif = t_rayDepth - t_sampleDepth;
-		if(depthDif >= 0 && depthDif < 0.005){ 
+		if(depthDif > -0.05 && depthDif < 0.05){ 
 			hit = true;
-			//reflectionColor = vec3(0.6f,0,0);
+			reflectionColor = vec3(0.6f,0,0);
 			reflectionColor = texture(colorBuffer, rayStart.xy).rgb;
 			break;
 		}
