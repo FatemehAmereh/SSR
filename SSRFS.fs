@@ -50,8 +50,8 @@ void main(){
 
 	ivec2 screenSpaceDistance = screenSpaceEndPosition - screenSpaceStartPosition;
 
-	int screenSpaceMaxDistance = max(abs(screenSpaceDistance.x), abs(screenSpaceDistance.y)) / 5;
-	vec3 dirTexture = screenSpaceMaxDistance == 0 ? rayDirectionTexture : rayDirectionTexture / screenSpaceMaxDistance;
+	int screenSpaceMaxDistance = max(abs(screenSpaceDistance.x), abs(screenSpaceDistance.y)) / 2;
+	vec3 dirTexture = rayDirectionTexture / max(screenSpaceMaxDistance, 0.001f);
 
 	vec3 rayStart = pixelPositionTexture;
 	float sampleDepth;
@@ -64,24 +64,13 @@ void main(){
 		}
 		sampleDepth = texture(depthMap, rayStart.xy).r;
 
-		float t_rayDepth = ReturnZInView(rayStart);
-		float t_sampleDepth = ReturnZInView(vec3(rayStart.x, rayStart.y, sampleDepth));
-
-		float depthDif = t_rayDepth - t_sampleDepth;
-		if(depthDif > -0.05 && depthDif < 0.05){ 
+		float depthDif = rayStart.z - sampleDepth;
+		if(depthDif >= 0 && depthDif < 0.00001){ //we have a hit
+			//reflectionColor = vec3(0.6f,0,0);
 			hit = true;
-			reflectionColor = vec3(0.6f,0,0);
 			reflectionColor = texture(colorBuffer, rayStart.xy).rgb;
 			break;
 		}
-
-		//float depthDif = rayStart.z - sampleDepth;
-		//if(depthDif >= 0 && depthDif < 0.00001){ //sampleDepth < rayStart.z){	//we have a hit
-		//	//reflectionColor = vec3(0.6f,0,0);
-		//	hit = true;
-		//	reflectionColor = texture(colorBuffer, rayStart.xy).rgb;
-		//	break;
-		//}
 	}
 	refColor = vec4(reflectionColor,1);
 	//refColor = hit ? vec4(reflectionColor,1) : vec4(skyColor,1);

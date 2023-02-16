@@ -74,10 +74,19 @@ int main() {
     if (!Objectctm.LoadFromFileObj("Models/bunny.obj")) {
         return -1;
     }
+    cyTriMesh Tablectm;
+    if (!Tablectm.LoadFromFileObj("Models/SIMPLE ROUND TABLE.obj")) {
+        return -1;
+    }
+    cyTriMesh Teapotctm;
+    if (!Teapotctm.LoadFromFileObj("Models/teapot.obj")) {
+        return -1;
+    }
     cyTriMesh Cubectm;
     if (!Cubectm.LoadFromFileObj("Models/cube.obj")) {
         return -1;
     }
+    
     cyTriMesh Groundctm;
     if (!Groundctm.LoadFromFileObj("Models/ground.obj")) {
         return -1;
@@ -194,9 +203,11 @@ int main() {
 #pragma endregion
 
     Shader forwardPassShader("ForwardPassVS.vs", "ForwardPassFS.fs");
-    models.push_back(new Model(Objectctm, forwardPassShader, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), projection, true, false));
-    models.push_back(new Model(Cubectm, forwardPassShader, glm::vec3(0.0f, -9.0f, 0.0f), glm::vec3(0.6f, 1.0f, 0.6f), projection, true, false));
-    models.push_back(new Model(Spherectm, forwardPassShader, glm::vec3(-10.0f, -5.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), projection, true, false));    //sphere
+    models.push_back(new Model(Objectctm, forwardPassShader, glm::vec3(0.0f, 5.0f, -20.0f), glm::vec3(3.0f, 3.0f, 3.0f), projection, true, false));
+    models.push_back(new Model(Tablectm, forwardPassShader, glm::vec3(-17.0f, -9.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), projection, true, false));
+    models.push_back(new Model(Teapotctm, forwardPassShader, glm::vec3(-17.0f, -2.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), projection, true, true));
+    //models.push_back(new Model(Cubectm, forwardPassShader, glm::vec3(0.0f, -9.0f, 0.0f), glm::vec30.6f, 1.0f, 0.6f), projection, true, false));
+    //Model* sphere = new Model(Spherectm, forwardPassShader, glm::vec3(-10.0f, -5.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), projection, true, false);    //sphere
     Model* ground = new Model(Groundctm, forwardPassShader, glm::vec3(0.0f, -20.0f, 0.0f), glm::vec3(10.0f, 1.0f, 10.0f), projection, true, false); //ground
 
     Shader lightingPassShader("DeferredPassVS.vs", "DeferredPassFS.fs");
@@ -247,6 +258,8 @@ int main() {
         glStencilMask(0xFF);
         ground->setLightPosition(view * glm::vec4(lightPosition, 1));
         ground->Draw(view);
+        //sphere->setLightPosition(view* glm::vec4(lightPosition, 1));
+        //sphere->Draw(view);
 
         //Deferred(Lighting) Pass
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, LPFB);
