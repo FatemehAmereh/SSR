@@ -8,11 +8,11 @@
 #include <vector>
 #include <memory>
 
-#include "Shader.h"
-#include "Model.h"
-#include "cyTriMesh.h"
-#include "Camera.h"
-#include "Quad.h"
+#include "Headers/Shader.h"
+#include "Headers/Model.h"
+#include "Headers/cyTriMesh.h"
+#include "Headers/Camera.h"
+#include "Headers/Quad.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -178,7 +178,7 @@ int main() {
     }
 #pragma endregion
 
-    Shader forwardPassShader("ForwardPassVS.vs", "ForwardPassFS.fs");
+    Shader forwardPassShader("Shaders/ForwardPassVS.vs", "Shaders/ForwardPassFS.fs");
 
     int numOfModels = 3;
     cyTriMesh* Objectctm = new cyTriMesh;
@@ -201,7 +201,7 @@ int main() {
     }   
     Model* ground = new Model(Groundctm, forwardPassShader, glm::vec3(0.0f, -20.0f, 0.0f), glm::vec3(10.0f, 1.0f, 10.0f), projection, true, false); //ground
 
-    Shader lightingPassShader("DeferredPassVS.vs", "DeferredPassFS.fs");
+    Shader lightingPassShader("Shaders/DeferredPassVS.vs", "Shaders/DeferredPassFS.fs");
     lightingPassShader.use();
     lightingPassShader.setInt("gNormal", 0);
     lightingPassShader.setInt("gAlbedo", 1);
@@ -216,13 +216,13 @@ int main() {
     }
 
 
-    Shader SSRShader("SSRVS.vs", "SSRFS.fs");
+    Shader SSRShader("Shaders/SSRVS.vs", "Shaders/SSRFS.fs");
     SSRShader.use();
     SSRShader.setInt("gNormal", 0);
     SSRShader.setInt("colorBuffer", 1);
     SSRShader.setInt("depthMap", 2);
 
-    Shader outputShader("SSRVS.vs", "outputFS.fs");
+    Shader outputShader("Shaders/SSRVS.vs", "Shaders/outputFS.fs");
     outputShader.use();
     outputShader.setInt("colorTexture", 0);
     outputShader.setInt("refTexture", 1);

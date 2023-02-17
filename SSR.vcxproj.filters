@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Shaders">
+      <UniqueIdentifier>{e6754d33-b26a-4627-965f-280be7ed4690}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -21,54 +24,54 @@
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Quad.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Shader.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Headers\Camera.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cyCore.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Headers\cyCore.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cyTriMesh.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Headers\cyTriMesh.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cyVector.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Headers\cyVector.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Headers\Model.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="stb_image.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Headers\Quad.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Headers\Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\stb_image.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ForwardPassVS.vs">
-      <Filter>Source Files</Filter>
+    <None Include="Shaders\DeferredPassFS.fs">
+      <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="DeferredPassFS.fs">
-      <Filter>Source Files</Filter>
+    <None Include="Shaders\DeferredPassVS.vs">
+      <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="ForwardPassFS.fs">
-      <Filter>Source Files</Filter>
+    <None Include="Shaders\ForwardPassFS.fs">
+      <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="DeferredPassVS.vs">
-      <Filter>Source Files</Filter>
+    <None Include="Shaders\ForwardPassVS.vs">
+      <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="SSRVS.vs">
-      <Filter>Source Files</Filter>
+    <None Include="Shaders\outputFS.fs">
+      <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="SSRFS.fs">
-      <Filter>Source Files</Filter>
+    <None Include="Shaders\SSRFS.fs">
+      <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="outputFS.fs">
-      <Filter>Source Files</Filter>
+    <None Include="Shaders\SSRVS.vs">
+      <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -133,26 +133,26 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
-    <ClCompile Include="Quad.h" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="cyCore.h" />
-    <ClInclude Include="cyTriMesh.h" />
-    <ClInclude Include="cyVector.h" />
-    <ClInclude Include="Model.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Headers\Camera.h" />
+    <ClInclude Include="Headers\cyCore.h" />
+    <ClInclude Include="Headers\cyTriMesh.h" />
+    <ClInclude Include="Headers\cyVector.h" />
+    <ClInclude Include="Headers\Model.h" />
+    <ClInclude Include="Headers\Quad.h" />
+    <ClInclude Include="Headers\Shader.h" />
+    <ClInclude Include="Headers\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="DeferredPassVS.vs" />
-    <None Include="ForwardPassFS.fs" />
-    <None Include="DeferredPassFS.fs" />
-    <None Include="ForwardPassVS.vs" />
-    <None Include="outputFS.fs" />
-    <None Include="SSRFS.fs" />
-    <None Include="SSRVS.vs" />
+    <None Include="Shaders\DeferredPassFS.fs" />
+    <None Include="Shaders\DeferredPassVS.vs" />
+    <None Include="Shaders\ForwardPassFS.fs" />
+    <None Include="Shaders\ForwardPassVS.vs" />
+    <None Include="Shaders\outputFS.fs" />
+    <None Include="Shaders\SSRFS.fs" />
+    <None Include="Shaders\SSRVS.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

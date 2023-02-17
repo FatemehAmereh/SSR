@@ -2,10 +2,10 @@
 #define MODEL_H
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "Headers/stb_image.h"
+#include "stb_image.h"
 
-#include "Headers/Shader.h"
-#include "Headers/cyTriMesh.h"
+#include "Shader.h"
+#include "cyTriMesh.h"
 #include <glad/glad.h> 
 
 class Model {
